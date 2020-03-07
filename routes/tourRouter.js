@@ -14,7 +14,7 @@ router.param('id', (req, res, next, id) => {
 });
 
 router
-  .route('/:id')
+  .route('/:tourName')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);

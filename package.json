@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV='production' nodemon",
-    "html2jade": "html2jade public/overview.html"
+    "html2jade": "html2jade public/tour.html"
   },
   "author": "Allen",
   "license": "ISC",
@@ -14,7 +14,8 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.2",
     "morgan": "^1.9.1",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "validator": "^12.2.0"
   },
   "devDependencies": {
     "html2jade": "^0.8.6"

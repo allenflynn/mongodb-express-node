@@ -1,5 +1,7 @@
 const fs = require('fs');
 const Tour = require('./../models/tourModel');
+const User = require('./../models/userModel');
+const Review = require('./../models/reviewModel');
 
 exports.getAllTours = async (req, res) => {
   try {
@@ -25,10 +27,11 @@ exports.createTour = async (req, res) => {
 
 exports.getTour = async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id);
-    res.status(200).json({
-      tour
-    });
+    const tour = await Tour.findOne({
+      name: req.params.tourName.replace(/-/g, ' ')
+    }).populate('reviews', 'review rating user');
+    res.status(200).render('tour', { title: tour.name, tour });
+    // res.send(tour);
   } catch (error) {
     res.status(400).json({ message: error });
   }

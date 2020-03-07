@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
-const tourRouter = require('./routes/tourRoutes');
+const viewRouter = require('./routes/viewRouter');
+const tourRouter = require('./routes/tourRouter');
 
 const app = express();
 
@@ -12,10 +13,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use(express.static('public'));
 
-app.use('/api/v1/tours', tourRouter);
-
-app.get('/', function(req, res) {
-  res.render('index', { title: 'Hey', message: 'Hello there!' });
-});
+app.use('/', viewRouter);
+app.use('/tour', tourRouter);
 
 module.exports = app;
