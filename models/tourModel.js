@@ -114,6 +114,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Query Middleware
 tourSchema.pre(/^find/, function(next) {
   this.populate('guides', '-__v -passwordChangedAt');
   next();

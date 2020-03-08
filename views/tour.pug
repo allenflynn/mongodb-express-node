@@ -7,6 +7,17 @@ mixin overviewBox(label, text, icon)
         span.overview-box__label=label
         span.overview-box__text=text
 
+mixin reviewCard(review)
+    .reviews__card
+        .reviews__avatar
+            img.reviews__avatar-img(src=`/img/users/${review.user.photo}`, alt=`${review.user.name}`)
+            h6.reviews__user=review.user.name
+        p.reviews__text=review.review
+        .reviews__rating
+            each star in [1,2,3,4,5]
+                svg.reviews__star(class=`reviews__star--${review.rating >= star ? 'active' : 'inactive'}`)
+                    use(xlink:href='/img/icons.svg#icon-star')
+
 block content
     section.section-header
         .header__hero
@@ -33,8 +44,10 @@ block content
             div
                 .overview-box__group
                     h2.heading-secondary.ma-bt-lg Quick facts
-
+                    
+                    // const
                     -const date = tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'})
+                    // mixin
                     +overviewBox('Next date',date,'calendar')
                     +overviewBox('Difficulty',tour.difficulty,'trending-up')
                     +overviewBox('Participants',`${tour.maxGroupSize} people`,'user')
@@ -43,6 +56,7 @@ block content
                 .overview-box__group
                     h2.heading-secondary.ma-bt-lg Your tour guides
 
+                    // loop
                     each guide in tour.guides             
                         .overview-box__detail
                             img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
@@ -60,15 +74,12 @@ block content
                 p.description__text=p
     |     
     section.section-pictures
-        .picture-box
-            img.picture-box__img.picture-box__img--1(src='/img/tours/tour-5-1.jpg', alt='The Park Camper Tour 1')
-        |       
-        .picture-box
-            img.picture-box__img.picture-box__img--2(src='/img/tours/tour-5-2.jpg', alt='The Park Camper Tour 1')
-        |       
-        .picture-box
-            img.picture-box__img.picture-box__img--3(src='/img/tours/tour-5-3.jpg', alt='The Park Camper Tour 1')
-    |     
+        
+        each img, i in tour.images
+            .picture-box
+                // adding class
+                img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} Tour ${i + 1}`, class=`picture-box__img--${i + 1}`)
+
     section.section-map
         #map
         |       
@@ -186,140 +197,9 @@ block content
     |     
     section.section-reviews
         .reviews
-            .reviews__card
-                .reviews__avatar
-                    img.reviews__avatar-img(src='/img/users/user-7.jpg', alt='Jim Brown')
-                    |             
-                    h6.reviews__user Jim Brown
-                |           
-                p.reviews__text
-                    | Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque
-                    | dignissimos sint quo commodi corrupti accusantium veniam saepe
-                    | numquam.
-                |           
-                .reviews__rating
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-            |         
-            .reviews__card
-                .reviews__avatar
-                    img.reviews__avatar-img(src='/img/users/user-14.jpg', alt='Laura Wilson')
-                    |             
-                    h6.reviews__user Laura Wilson
-                |           
-                p.reviews__text
-                    | Veniam adipisci blanditiis, corporis sit magnam aperiam ad, fuga
-                    | reiciendis provident deleniti cumque similique itaque animi,
-                    | sapiente obcaecati beatae accusantium.
-                |           
-                .reviews__rating
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--inactive
-                        use(xlink:href='/img/icons.svg#icon-star')
-            |         
-            .reviews__card
-                .reviews__avatar
-                    img.reviews__avatar-img(src='/img/users/user-15.jpg', alt='Ben Hadley')
-                    |             
-                    h6.reviews__user Ben Hadley
-                |           
-                p.reviews__text
-                    | Debitis, nesciunt itaque! At quis officia natus. Suscipit,
-                    | reprehenderit blanditiis mollitia distinctio ducimus porro tempore
-                    | perspiciatis sunt vel.
-                |           
-                .reviews__rating
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-            |         
-            .reviews__card
-                .reviews__avatar
-                    img.reviews__avatar-img(src='/img/users/user-6.jpg', alt='Alexander Jones')
-                    |             
-                    h6.reviews__user Alexander Jones
-                |           
-                p.reviews__text
-                    | Quaerat laborum eveniet ut aut maiores doloribus mollitia aperiam
-                    | quis praesentium sed inventore harum aliquam veritatis at adipisci
-                    | ea assumenda!
-                |           
-                .reviews__rating
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-            |         
-            .reviews__card
-                .reviews__avatar
-                    img.reviews__avatar-img(src='/img/users/user-3.jpg', alt='Ayla Cornell')
-                    |             
-                    h6.reviews__user Ayla Cornell
-                |           
-                p.reviews__text
-                    | Perferendis quo aliquid iste quas laboriosam molestias illo est
-                    | voluptatem odit ea. Vero placeat culpa provident dicta maiores!
-                |           
-                .reviews__rating
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-                    |             
-                    svg.reviews__star.reviews__star--active
-                        use(xlink:href='/img/icons.svg#icon-star')
-    |     
+            each review in tour.reviews
+                +reviewCard(review)
+ 
     section.section-cta
         .cta
             .cta__img.cta__img--logo
