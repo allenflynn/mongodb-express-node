@@ -7,3 +7,9 @@ exports.getViews = async (req, res) => {
     tours
   });
 };
+
+exports.getLoginForm = async (req, res) => {
+  res.status(200).render('login', {
+    title: 'Login'
+  });
+};
