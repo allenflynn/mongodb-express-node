@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -46,7 +47,11 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.set('validateBeforeSave', false);
+// userSchema.set('validateBeforeSave', false);
+
+userSchema.methods.passwordCheck = async function(data, encrypted) {
+  return await bcrypt.compare(data, encrypted);
+};
 
 const User = mongoose.model('User', userSchema);
 
