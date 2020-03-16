@@ -33,3 +33,9 @@ export const logout = async () => {
     showAlert('error', 'Error logging out! Try again.');
   }
 };
+
+// export const signup = async () => {
+//   const res = await axios.get('/api/v1/users/signup');
+//   if ((res.data.status = 'success')) {
+//   }
+// };

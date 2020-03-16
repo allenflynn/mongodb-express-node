@@ -1,9 +1,10 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { login, logout } from './login';
+import { login, logout, signup } from './login';
 
 const loginForm = document.querySelector('.form');
 const logOutBtn = document.querySelector('.nav__el--logout');
+const signUpBtn = document.querySelector('.nav__el.nav__el--cta');
 
 if (loginForm) {
   loginForm.addEventListener('submit', e => {
@@ -16,4 +17,8 @@ if (loginForm) {
 
 if (logOutBtn) {
   logOutBtn.addEventListener('click', logout);
+}
+
+if (signUpBtn) {
+  signUpBtn.addEventListener('click', signup);
 }

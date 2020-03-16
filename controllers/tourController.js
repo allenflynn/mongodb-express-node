@@ -14,24 +14,28 @@ exports.getAllTours = async (req, res) => {
   }
 };
 
+exports.getTour = async (req, res, next) => {
+  try {
+    const tour = await Tour.findOne({
+      name: req.params.tourName.replace(/-/g, ' ')
+    }).populate('reviews', 'review rating user');
+    if (!tour) {
+      const err = new Error('There is no tour with that name.');
+      err.statusCode = 404;
+      return next(err);
+    }
+    res.status(200).render('tour', { title: tour.name, tour });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
     res.status(201).json({
       newTour
     });
-  } catch (error) {
-    res.status(400).json({ message: error });
-  }
-};
-
-exports.getTour = async (req, res) => {
-  try {
-    const tour = await Tour.findOne({
-      name: req.params.tourName.replace(/-/g, ' ')
-    }).populate('reviews', 'review rating user');
-    res.status(200).render('tour', { title: tour.name, tour });
-    // res.send(tour);
   } catch (error) {
     res.status(400).json({ message: error });
   }

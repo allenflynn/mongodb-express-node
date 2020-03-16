@@ -1,6 +1,8 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
+exports.signup = async (req, res, next) => {};
+
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -55,4 +57,32 @@ exports.isLoggedIn = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   res.clearCookie('jwt');
   res.status(200).json({ status: 'success' });
+};
+
+exports.protect = async (req, res, next) => {
+  const cookie = req.cookies.jwt;
+  if (!cookie) {
+    const err = new Error(
+      'You are not logged in! Please log in to get access.'
+    );
+    err.statusCode = 401;
+    return next(err);
+  }
+  if (cookie) {
+    try {
+      const decoded = jwt.verify(cookie, process.env.PRIVATEKEY);
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        const err = new Error(
+          'The user belonging to this token does no longer exist.'
+        );
+        err.statusCode = 401;
+        return next(err);
+      }
+      res.locals.user = currentUser;
+      next();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 };

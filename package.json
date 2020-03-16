@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV='production' nodemon",
-    "html2jade": "html2jade public/tour.html",
+    "html2jade": "html2jade public/signup.html",
     "parcel": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Allen",

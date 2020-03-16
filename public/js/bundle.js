@@ -13840,7 +13840,12 @@ var logout = /*#__PURE__*/function () {
   return function logout() {
     return _ref2.apply(this, arguments);
   };
-}();
+}(); // export const signup = async () => {
+//   const res = await axios.get('/api/v1/users/signup');
+//   if ((res.data.status = 'success')) {
+//   }
+// };
+
 
 exports.logout = logout;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"index.js":[function(require,module,exports) {
@@ -13854,6 +13859,7 @@ var _login = require("./login");
 
 var loginForm = document.querySelector('.form');
 var logOutBtn = document.querySelector('.nav__el--logout');
+var signUpBtn = document.querySelector('.nav__el.nav__el--cta');
 
 if (loginForm) {
   loginForm.addEventListener('submit', function (e) {
@@ -13866,6 +13872,10 @@ if (loginForm) {
 
 if (logOutBtn) {
   logOutBtn.addEventListener('click', _login.logout);
+}
+
+if (signUpBtn) {
+  signUpBtn.addEventListener('click', _login.signup);
 }
 },{"core-js/stable":"../../node_modules/core-js/stable/index.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./login":"login.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -13895,7 +13905,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59832" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62376" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

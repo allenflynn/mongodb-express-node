@@ -4,13 +4,14 @@ const cookieParser = require('cookie-parser');
 const viewRouter = require('./routes/viewRouter');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
+const errorController = require('./controllers/errorController');
+// const appError = require('./utils/appError');
 
-const appError = require('./utils/appError');
-
+// Start express app
 const app = express();
-
 app.set('view engine', 'pug');
 
+// Middlewares
 if (process.env.NODE_ENV === 'development') {
   // app.use(morgan('dev'));
 }
@@ -24,10 +25,12 @@ app.use(express.static('public'));
 //   next();
 // });
 
+// Routes
 app.use('/', viewRouter);
 app.use('/tour', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+// Error handling
 app.all('*', (req, res, next) => {
   // res
   //   .status(404)
@@ -37,14 +40,6 @@ app.all('*', (req, res, next) => {
   err.statusCode = 404;
   next(err);
 });
-
-app.use((err, req, res, next) => {
-  err.status = err.status || 'error';
-  err.statusCode = err.statusCode || 500;
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message
-  });
-});
+app.use(errorController);
 
 module.exports = app;
