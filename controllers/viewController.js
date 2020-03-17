@@ -1,6 +1,6 @@
 const Tour = require('../models/tourModel');
 
-exports.getViews = async (req, res) => {
+exports.getIndex = async (req, res) => {
   try {
     const tours = await Tour.find();
     res.status(200).render('index', {

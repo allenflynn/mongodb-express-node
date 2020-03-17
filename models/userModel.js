@@ -49,7 +49,14 @@ const userSchema = new mongoose.Schema({
 
 // userSchema.set('validateBeforeSave', false);
 
-userSchema.methods.passwordCheck = async function(data, encrypted) {
+userSchema.pre('save', async function(next) {
+  // Hash password with salt of 12
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.methods.compare = async function(data, encrypted) {
   return await bcrypt.compare(data, encrypted);
 };
 

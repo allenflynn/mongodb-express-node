@@ -13732,7 +13732,7 @@ var showAlert = function showAlert(type, msg) {
   hideAlert();
   var markup = "<div class=\"alert alert--".concat(type, "\">").concat(msg, "</div>");
   document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
-  window.setTimeout(hideAlert, 5000);
+  window.setTimeout(hideAlert, 2500);
 };
 
 exports.showAlert = showAlert;
@@ -13742,7 +13742,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.logout = exports.login = void 0;
+exports.logout = exports.login = exports.signup = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -13754,8 +13754,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var login = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(email, password) {
+var signup = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email, password, confirmPassword) {
     var res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -13763,6 +13763,56 @@ var login = /*#__PURE__*/function () {
           case 0:
             _context.prev = 0;
             _context.next = 3;
+            return (0, _axios.default)({
+              method: 'post',
+              url: '/api/v1/users/signup',
+              data: {
+                name: name,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
+              }
+            });
+
+          case 3:
+            res = _context.sent;
+
+            if (res.data.status === 'success') {
+              console.log('login success');
+            }
+
+            _context.next = 10;
+            break;
+
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0.response);
+
+          case 10:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 7]]);
+  }));
+
+  return function signup(_x, _x2, _x3, _x4) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.signup = signup;
+
+var login = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(email, password) {
+    var res;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _context2.next = 3;
             return (0, _axios.default)({
               method: 'post',
               url: '/api/v1/users/login',
@@ -13773,7 +13823,7 @@ var login = /*#__PURE__*/function () {
             });
 
           case 3:
-            res = _context.sent;
+            res = _context2.sent;
 
             if (res.data.status === 'success') {
               (0, _alert.showAlert)('success', 'Logged in successfully!');
@@ -13782,44 +13832,6 @@ var login = /*#__PURE__*/function () {
               }, 1000);
             }
 
-            _context.next = 11;
-            break;
-
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            console.log(_context.t0.response);
-            (0, _alert.showAlert)('error', _context.t0.response.data.message);
-
-          case 11:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, null, [[0, 7]]);
-  }));
-
-  return function login(_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-exports.login = login;
-
-var logout = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var res;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return _axios.default.get('/api/v1/users/logout');
-
-          case 3:
-            res = _context2.sent;
-            if (res.data.status = 'success') location.reload(true);
             _context2.next = 11;
             break;
 
@@ -13827,7 +13839,7 @@ var logout = /*#__PURE__*/function () {
             _context2.prev = 7;
             _context2.t0 = _context2["catch"](0);
             console.log(_context2.t0.response);
-            (0, _alert.showAlert)('error', 'Error logging out! Try again.');
+            (0, _alert.showAlert)('error', _context2.t0.response.data.message);
 
           case 11:
           case "end":
@@ -13837,17 +13849,110 @@ var logout = /*#__PURE__*/function () {
     }, _callee2, null, [[0, 7]]);
   }));
 
-  return function logout() {
+  return function login(_x5, _x6) {
     return _ref2.apply(this, arguments);
   };
-}(); // export const signup = async () => {
-//   const res = await axios.get('/api/v1/users/signup');
-//   if ((res.data.status = 'success')) {
-//   }
-// };
+}();
 
+exports.login = login;
+
+var logout = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+    var res;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return _axios.default.get('/api/v1/users/logout');
+
+          case 3:
+            res = _context3.sent;
+            if (res.data.status = 'success') // location.reload(true);
+              location.assign('/');
+            _context3.next = 11;
+            break;
+
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0.response);
+            (0, _alert.showAlert)('error', 'Error logging out! Try again.');
+
+          case 11:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 7]]);
+  }));
+
+  return function logout() {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 exports.logout = logout;
+},{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"update.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.update = void 0;
+
+var _axios = _interopRequireDefault(require("axios"));
+
+var _alert = require("./alert");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var update = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, type) {
+    var url, res;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            url = type === 'settings' ? '/api/v1/users/updateSettings' : 'api/v1/users/updatePassword';
+            _context.prev = 1;
+            _context.next = 4;
+            return _axios.default.patch(url, data);
+
+          case 4:
+            res = _context.sent;
+
+            if (res.data.status === 'success') {
+              (0, _alert.showAlert)('success', "".concat(type.toUpperCase(), " updated successfully!"));
+            }
+
+            _context.next = 11;
+            break;
+
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](1);
+            (0, _alert.showAlert)('error', _context.t0.response.data.message);
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[1, 8]]);
+  }));
+
+  return function update(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.update = update;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -13857,9 +13962,24 @@ require("regenerator-runtime/runtime");
 
 var _login = require("./login");
 
-var loginForm = document.querySelector('.form');
+var _update = require("./update");
+
+var loginForm = document.querySelector('.form.form--login');
+var signUpFrom = document.querySelector('.form.form--signup');
 var logOutBtn = document.querySelector('.nav__el--logout');
-var signUpBtn = document.querySelector('.nav__el.nav__el--cta');
+var userDataForm = document.querySelector('.form.form-user-data');
+var userPasswordForm = document.querySelector('.form.form-user-password');
+
+if (signUpFrom) {
+  signUpFrom.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    var passwordConfirm = document.getElementById('passwordConfirm').value;
+    (0, _login.signup)(name, email, password, passwordConfirm);
+  });
+}
 
 if (loginForm) {
   loginForm.addEventListener('submit', function (e) {
@@ -13874,10 +13994,32 @@ if (logOutBtn) {
   logOutBtn.addEventListener('click', _login.logout);
 }
 
-if (signUpBtn) {
-  signUpBtn.addEventListener('click', _login.signup);
+if (userDataForm) {
+  userDataForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    (0, _update.update)({
+      name: name,
+      email: email
+    }, 'settings');
+  });
 }
-},{"core-js/stable":"../../node_modules/core-js/stable/index.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./login":"login.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+if (userPasswordForm) {
+  userPasswordForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var current = document.getElementById('password-current').value;
+    var password = document.getElementById('password').value;
+    var confirm = document.getElementById('password-confirm').value;
+    (0, _update.update)({
+      current: current,
+      password: password,
+      confirm: confirm
+    }, 'password');
+  });
+}
+},{"core-js/stable":"../../node_modules/core-js/stable/index.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./login":"login.js","./update":"update.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -13905,7 +14047,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62376" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51181" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

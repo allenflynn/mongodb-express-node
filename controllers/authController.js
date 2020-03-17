@@ -1,7 +1,31 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
-exports.signup = async (req, res, next) => {};
+createSendToken = (user, statusCode, res) => {
+  const privateKey = process.env.PRIVATEKEY;
+  const token = jwt.sign({ id: user._id }, privateKey, { expiresIn: '1h' });
+  cookieOptions = {
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
+  };
+  res.cookie('jwt', token, cookieOptions);
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'success',
+    data: { user },
+    token
+  });
+};
+
+exports.signup = async (req, res, next) => {
+  const newUser = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm
+  });
+  createSendToken(newUser, 201, res);
+};
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -15,25 +39,14 @@ exports.login = async (req, res, next) => {
 
   // 2. Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
-  if (!user || !(await user.passwordCheck(password, user.password))) {
+  if (!user || !(await user.compare(password, user.password))) {
     const err = new Error('Incorrect email or password');
     err.statusCode = 401;
     return next(err);
   }
 
   // 3. Send token to client
-  const privateKey = process.env.PRIVATEKEY;
-  const token = jwt.sign({ id: user._id }, privateKey, { expiresIn: '1h' });
-  cookieOptions = {
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
-  };
-  res.cookie('jwt', token, cookieOptions);
-  user.password = undefined;
-  res.status(200).json({
-    status: 'success',
-    data: { user },
-    token
-  });
+  createSendToken(user, 200, res);
 };
 
 exports.isLoggedIn = async (req, res, next) => {
@@ -60,17 +73,20 @@ exports.logout = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
-  const cookie = req.cookies.jwt;
-  if (!cookie) {
+  const token = req.cookies.jwt;
+  if (!token) {
     const err = new Error(
       'You are not logged in! Please log in to get access.'
     );
     err.statusCode = 401;
     return next(err);
   }
-  if (cookie) {
+  if (token) {
     try {
-      const decoded = jwt.verify(cookie, process.env.PRIVATEKEY);
+      const decoded = await promisify(jwt.verify)(
+        token,
+        process.env.PRIVATEKEY
+      );
       const currentUser = await User.findById(decoded.id);
       if (!currentUser) {
         const err = new Error(
@@ -79,10 +95,92 @@ exports.protect = async (req, res, next) => {
         err.statusCode = 401;
         return next(err);
       }
+
+      // Passing user to next
+      req.user = currentUser;
+
       res.locals.user = currentUser;
       next();
     } catch (error) {
-      console.log(error);
+      if (error.name == 'TokenExpiredError') {
+        res.status(401).render('error', {
+          title: 'Error',
+          message: 'Your token has expired! Please log in again.'
+        });
+      }
     }
+  }
+};
+
+// URL Encoding
+// exports.updateSettingsURL = async (req, res, next) => {
+//   try {
+//     const updatedUser = await User.findByIdAndUpdate(
+//       req.user.id,
+//       {
+//         name: req.body.name,
+//         email: req.body.email
+//       },
+//       { new: true, runValidators: true }
+//     );
+
+//     res.status(200).render('account', {
+//       title: 'Your account',
+//       user: updatedUser
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// API
+exports.updateSettings = async (req, res, next) => {
+  const { name, email } = req.body;
+  try {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        name,
+        email
+      },
+      { new: true, runValidators: true }
+    );
+    res.status(200).json({ status: 'success' });
+  } catch (error) {
+    if (error.name == 'ValidationError') {
+      return res
+        .status(400)
+        .json({ status: error._message, message: error.errors.email.message });
+    }
+    next(error);
+  }
+};
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    // 1. Get user from collection
+    const user = await User.findById(req.user.id).select('+password');
+
+    // 2. Check if current password is correct
+    const match = await user.compare(req.body.current, user.password);
+    if (!match) {
+      const err = new Error('Your current pasword is wrong.');
+      err.statusCode = 401;
+      return next(err);
+    }
+
+    // update
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.confirm;
+    await user.save();
+    createSendToken(user, 200, res);
+  } catch (error) {
+    if (error.name == 'ValidationError') {
+      return res.status(400).json({
+        status: error._message,
+        message: error.errors['passwordConfirm'].message
+      });
+    }
+    next(error);
   }
 };
