@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { showAlert } from './alert';
 
-export const signup = async (name, email, password, confirmPassword) => {
+export const signup = async (name, email, password, confirm) => {
   try {
     const res = await axios({
       method: 'post',
@@ -10,11 +10,14 @@ export const signup = async (name, email, password, confirmPassword) => {
         name,
         email,
         password,
-        confirmPassword
+        confirm
       }
     });
     if (res.data.status === 'success') {
-      console.log('login success');
+      showAlert('success', 'Signup successfully!');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1000);
     }
   } catch (error) {
     console.log(error.response);

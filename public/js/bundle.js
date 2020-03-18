@@ -13755,7 +13755,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var signup = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email, password, confirmPassword) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email, password, confirm) {
     var res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -13770,7 +13770,7 @@ var signup = /*#__PURE__*/function () {
                 name: name,
                 email: email,
                 password: password,
-                confirmPassword: confirmPassword
+                confirm: confirm
               }
             });
 
@@ -13778,7 +13778,10 @@ var signup = /*#__PURE__*/function () {
             res = _context.sent;
 
             if (res.data.status === 'success') {
-              console.log('login success');
+              (0, _alert.showAlert)('success', 'Signup successfully!');
+              window.setTimeout(function () {
+                location.assign('/');
+              }, 1000);
             }
 
             _context.next = 10;
@@ -13928,7 +13931,7 @@ var update = /*#__PURE__*/function () {
             res = _context.sent;
 
             if (res.data.status === 'success') {
-              (0, _alert.showAlert)('success', "".concat(type.toUpperCase(), " updated successfully!"));
+              (0, _alert.showAlert)('success', "".concat(type.charAt(0).toUpperCase() + type.slice(1), " updated successfully!"));
             }
 
             _context.next = 11;
@@ -13964,6 +13967,10 @@ var _login = require("./login");
 
 var _update = require("./update");
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 var loginForm = document.querySelector('.form.form--login');
 var signUpFrom = document.querySelector('.form.form--signup');
 var logOutBtn = document.querySelector('.nav__el--logout');
@@ -13976,8 +13983,8 @@ if (signUpFrom) {
     var name = document.getElementById('name').value;
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
-    var passwordConfirm = document.getElementById('passwordConfirm').value;
-    (0, _login.signup)(name, email, password, passwordConfirm);
+    var confirm = document.getElementById('passwordConfirm').value;
+    (0, _login.signup)(name, email, password, confirm);
   });
 }
 
@@ -13997,27 +14004,54 @@ if (logOutBtn) {
 if (userDataForm) {
   userDataForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _update.update)({
-      name: name,
-      email: email
-    }, 'settings');
+    var formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('photo', document.getElementById('photo').files[0]);
+    (0, _update.update)(formData, 'settings'); // const name = document.getElementById('name').value;
+    // const email = document.getElementById('email').value;
+    // update({ name, email }, 'settings');
   });
 }
 
 if (userPasswordForm) {
-  userPasswordForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var current = document.getElementById('password-current').value;
-    var password = document.getElementById('password').value;
-    var confirm = document.getElementById('password-confirm').value;
-    (0, _update.update)({
-      current: current,
-      password: password,
-      confirm: confirm
-    }, 'password');
-  });
+  userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
+      var current, password, confirm;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              e.preventDefault();
+              document.querySelector('.btn--save-password').textContent = 'Updating...';
+              current = document.getElementById('password-current').value;
+              password = document.getElementById('password').value;
+              confirm = document.getElementById('password-confirm').value;
+              _context.next = 7;
+              return (0, _update.update)({
+                current: current,
+                password: password,
+                confirm: confirm
+              }, 'password');
+
+            case 7:
+              document.querySelector('.btn--save-password').textContent = 'Save password';
+              document.getElementById('password-current').value = '';
+              document.getElementById('password').value = '';
+              document.getElementById('password-confirm').value = '';
+
+            case 11:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
 }
 },{"core-js/stable":"../../node_modules/core-js/stable/index.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./login":"login.js","./update":"update.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -14047,7 +14081,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51181" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49548" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -22,7 +22,7 @@ exports.signup = async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.confirm
   });
   createSendToken(newUser, 201, res);
 };
@@ -73,7 +73,18 @@ exports.logout = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
-  const token = req.cookies.jwt;
+  let token;
+
+  // 1. Get token
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
   if (!token) {
     const err = new Error(
       'You are not logged in! Please log in to get access.'
@@ -81,33 +92,29 @@ exports.protect = async (req, res, next) => {
     err.statusCode = 401;
     return next(err);
   }
-  if (token) {
-    try {
-      const decoded = await promisify(jwt.verify)(
-        token,
-        process.env.PRIVATEKEY
+
+  // 2. Verify token
+  try {
+    const decoded = await promisify(jwt.verify)(token, process.env.PRIVATEKEY);
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      const err = new Error(
+        'The user belonging to this token does no longer exist.'
       );
-      const currentUser = await User.findById(decoded.id);
-      if (!currentUser) {
-        const err = new Error(
-          'The user belonging to this token does no longer exist.'
-        );
-        err.statusCode = 401;
-        return next(err);
-      }
+      err.statusCode = 401;
+      return next(err);
+    }
 
-      // Passing user to next
-      req.user = currentUser;
-
-      res.locals.user = currentUser;
-      next();
-    } catch (error) {
-      if (error.name == 'TokenExpiredError') {
-        res.status(401).render('error', {
-          title: 'Error',
-          message: 'Your token has expired! Please log in again.'
-        });
-      }
+    // Passing user to next
+    req.user = currentUser;
+    res.locals.user = currentUser;
+    next();
+  } catch (error) {
+    if (error.name == 'TokenExpiredError') {
+      res.status(401).render('error', {
+        title: 'Error',
+        message: 'Your token has expired! Please log in again.'
+      });
     }
   }
 };
@@ -135,17 +142,16 @@ exports.protect = async (req, res, next) => {
 
 // API
 exports.updateSettings = async (req, res, next) => {
-  const { name, email } = req.body;
+  if (req.file) {
+    req.body.photo = req.file.filename;
+    console.log(req.body);
+  }
   try {
-    await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        name,
-        email
-      },
-      { new: true, runValidators: true }
-    );
-    res.status(200).json({ status: 'success' });
+    const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+    res.status(200).json({ status: 'success', data: user });
   } catch (error) {
     if (error.name == 'ValidationError') {
       return res
