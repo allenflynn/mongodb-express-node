@@ -16,6 +16,7 @@ router
   .patch(
     authController.protect,
     userController.uploadUserPhoto,
+    userController.resizeUserPhoto,
     authController.updateSettings
   );
 router

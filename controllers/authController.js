@@ -144,8 +144,8 @@ exports.protect = async (req, res, next) => {
 exports.updateSettings = async (req, res, next) => {
   if (req.file) {
     req.body.photo = req.file.filename;
-    console.log(req.body);
   }
+
   try {
     const user = await User.findByIdAndUpdate(req.user.id, req.body, {
       new: true,
