@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -50,14 +51,39 @@ const userSchema = new mongoose.Schema({
 // userSchema.set('validateBeforeSave', false);
 
 userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+
   // Hash password with salt of 12
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
 });
 
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.compare = async function(data, encrypted) {
   return await bcrypt.compare(data, encrypted);
+};
+
+userSchema.methods.resetPasswordToken = function() {
+  const token = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 1000 * 60 * 10;
+
+  console.log('send:' + token);
+  console.log('database:' + this.passwordResetToken);
+
+  return token;
 };
 
 const User = mongoose.model('User', userSchema);

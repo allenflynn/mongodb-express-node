@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const viewRouter = require('./routes/viewRouter');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
+const bookingRouter = require('./routes/bookingRouter');
 const errorController = require('./controllers/errorController');
 // const appError = require('./utils/appError');
 
@@ -30,6 +31,7 @@ app.use(express.static('public'));
 app.use('/', viewRouter);
 app.use('/tour', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // Error handling
 app.all('*', (req, res, next) => {

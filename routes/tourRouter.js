@@ -8,15 +8,15 @@ router
   .get(tourController.getAllTours)
   .post(tourController.createTour);
 
-router.param('id', (req, res, next, id) => {
-  console.log(`id: ${id}`);
-  next();
-});
-
 router
   .route('/:tourName')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
+
+router.param('tourName', (req, res, next, value) => {
+  console.log(`tourName: ${value}`);
+  next();
+});
 
 module.exports = router;
